@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class RotateScript : MonoBehaviour
 {
+    public PennerEasing.Functions easing;
     [Range(0.1f, 10f)]
     public float speed = 1f;
 
@@ -34,7 +35,7 @@ public class RotateScript : MonoBehaviour
         while (elapsed < time)
         {
             transform.rotation =
-                origin * Quaternion.Euler(MathHelper.SmootherStep(Vector3.zero, rotation, elapsed / time));
+                origin * Quaternion.Euler(MathHelper.Lerp(Vector3.zero, rotation, PennerEasing.Interpolate(elapsed / time, easing)));
 
             yield return null;
             
