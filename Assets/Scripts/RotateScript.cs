@@ -5,7 +5,6 @@ public class RotateScript : MonoBehaviour
 {
     [Range(0.1f, 10f)]
     public float speed = 1f;
-    private const float Rate = 1f / 60f;
 
     private IEnumerator Start()
     {
@@ -21,13 +20,27 @@ public class RotateScript : MonoBehaviour
                 2 => Vector3.right,
                 1 => Vector3.forward,
                 _ => Vector3.back
-            };
-            
-            for (var i = 0; i < 90; i++)
-            {
-                transform.rotation *= Quaternion.Euler(rotation);
-                yield return new WaitForSeconds(Rate / speed);
-            }
+            } * 90f;
+
+            yield return RotateTo(rotation, 1f / speed);
         }
+    }
+
+    private IEnumerator RotateTo(Vector3 rotation, float time)
+    {
+        var elapsed = 0f;
+        var origin = transform.rotation;
+        
+        while (elapsed < time)
+        {
+            transform.rotation =
+                origin * Quaternion.Euler(MathHelper.SmootherStep(Vector3.zero, rotation, elapsed / time));
+
+            yield return null;
+            
+            elapsed += Time.deltaTime;
+        }
+        
+        transform.rotation = origin * Quaternion.Euler(rotation);
     }
 }
